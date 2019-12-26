@@ -8,6 +8,7 @@ YELLOW = (255, 255, 0)
 PURPLE = (50, 0, 50)
 PINK = (255, 192, 203)
 CYAN = (0, 255, 255)
+ORANGE = (255, 165, 0)
 
 # Screen Info
 screen_size = width, height = 600, 600

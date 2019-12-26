@@ -5,7 +5,7 @@ from global_info import *
 width = 800
 height = 600
 FPS = 32
-BLOCK_COLORS = [BLUE, GREEN, RED, YELLOW, PURPLE, PINK, CYAN]
+BLOCK_COLORS = [BLUE, GREEN, RED, YELLOW, PURPLE, ORANGE, CYAN]
 
 class MyBlock(object):
 
@@ -17,7 +17,7 @@ class MyBlock(object):
         self.number = number
         self.colors = []
         self.vel_x = 1
-        self.vel_y = 30
+        self.vel_y = 2
         self.new_color = True
         self.focus_block = number-1#focus on bottom block
 
@@ -35,8 +35,8 @@ class MyBlock(object):
 
         for i in range(self.number):
             pygame.draw.rect(screen, self.colors[i], [self.x, self.y+i*self.height, self.width, self.height])# rect(surface, color, rect, width=0)
-            if(i == self.number-1):
-                pygame.draw.rect(screen, WHITE, [self.x, self.y+i*self.height, self.width, self.height], 3)
+
+        pygame.draw.rect(screen, WHITE, [self.x, self.y+self.focus_block*self.height, self.width, self.height], 3)
 
         self.fall()
 

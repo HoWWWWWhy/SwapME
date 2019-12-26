@@ -9,7 +9,7 @@ pygame.display.set_caption("Swap ME")
 screen = pygame.display.set_mode(screen_size)
 
 clock = pygame.time.Clock()
-FPS = 2
+FPS = 10
 
 def create_grid(locked_positions={}):
     cols = int(play_width / grid_size)
@@ -44,23 +44,59 @@ def draw_screen():
     
     pygame.display.update()
 
+def valid_move(block):
+    min_x = top_left_x
+    max_x = top_left_x + play_width
+
+    is_valid_left = False
+    is_valid_right = False
+
+    if block.x > min_x:
+        is_valid_left = True
+        
+    if block.x + block.width < max_x:
+        is_valid_right = True
+
+    return [is_valid_left, is_valid_right]
+
 # mainloop
 global grid
 
 run = True
 level = 1
+block_counts = level + 2
+
 locked_positions = {}  # (x,y):(255,0,0)
 grid = create_grid(locked_positions)
-myBlock = MyBlock(top_left_x, top_left_y, block_width, block_height, level+2)
-targetBlock = TargetBlock(width - target_offset_width, 150, block_width, block_height, level+2)
+myBlock = MyBlock(top_left_x, top_left_y, block_width, block_height, block_counts)
+targetBlock = TargetBlock(width - target_offset_width, 150, block_width, block_height, block_counts)
 
 while run:
     clock.tick(FPS)
 
+    [LeftMove, RightMove] = valid_move(myBlock)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                if LeftMove:
+                    myBlock.x -= grid_size
+            elif event.key == pygame.K_RIGHT:
+                if RightMove:
+                    myBlock.x += grid_size
+            elif event.key == pygame.K_UP:
+                if myBlock.focus_block > 0:
+                    myBlock.focus_block -= 1
+            elif event.key == pygame.K_DOWN:
+                if myBlock.focus_block < block_counts - 1:
+                    myBlock.focus_block += 1
+            elif event.key == pygame.K_SPACE:
+                # SWAP. 현재 선택 블록과 바로 윗 블록 바꾸기
+                myBlock.colors[myBlock.focus_block], myBlock.colors[myBlock.focus_block - 1] \
+                    = myBlock.colors[myBlock.focus_block - 1], myBlock.colors[myBlock.focus_block]
+            elif event.key == pygame.K_RETURN:# ENTER KEY
+                myBlock.y = top_left_y + play_height - myBlock.height * block_counts
     draw_screen()
 
 pygame.quit()
