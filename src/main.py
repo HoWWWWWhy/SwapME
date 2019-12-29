@@ -9,7 +9,6 @@ pygame.display.set_caption("Swap ME")
 screen = pygame.display.set_mode(screen_size)
 
 clock = pygame.time.Clock()
-FPS = 10
 
 def create_grid(locked_positions={}):
     grid = [[GRAY for x in range(cols)] for x in range(rows)]

@@ -12,6 +12,9 @@ ORANGE = (255, 165, 0)
 
 GRAY = (128, 128, 128)
 
+# Game Speed
+FPS = 10
+
 # Screen Info
 screen_size = width, height = 600, 600
 play_size = play_width, play_height = 300, 480

@@ -2,9 +2,6 @@ import pygame
 import random
 from global_info import *
 
-width = 800
-height = 600
-FPS = 32
 BLOCK_COLORS = [BLUE, GREEN, RED, YELLOW, PURPLE, ORANGE, CYAN]
 
 class MyBlock(object):
@@ -16,8 +13,7 @@ class MyBlock(object):
         self.height = height
         self.number = number
         self.colors = []
-        self.vel_x = 1
-        self.vel_y = 10
+        self.y_update_counter = 0
         self.focus_block = number-1#focus on bottom block
 
         self.color_set()
@@ -39,7 +35,10 @@ class MyBlock(object):
 
     def fall(self):
         if self.y < (bottom_y[int((self.x-top_left_x)/grid_size)] - self.height * self.number):
-            self.y += self.vel_y
+            self.y_update_counter += 1
+            if self.y_update_counter == FPS:
+                self.y += grid_size
+                self.y_update_counter = 0
 
 class TargetBlock(object):
     
