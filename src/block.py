@@ -17,10 +17,10 @@ class MyBlock(object):
         self.number = number
         self.colors = []
         self.vel_x = 1
-        self.vel_y = 2
+        self.vel_y = 10
         self.focus_block = number-1#focus on bottom block
-        self.pick_color = True
-    
+
+        self.color_set()
 
     def color_set(self):#중복되지 않도록 블록 색깔 뽑기
         for i in range(self.number):
@@ -30,10 +30,6 @@ class MyBlock(object):
             self.colors.append(random_color) 
             
     def draw(self, screen):
-        if(self.pick_color):
-            self.color_set()
-            self.pick_color = False
-
         for i in range(self.number):
             pygame.draw.rect(screen, self.colors[i], [self.x, self.y+i*self.height, self.width, self.height])# rect(surface, color, rect, width=0)
 
@@ -42,7 +38,7 @@ class MyBlock(object):
         self.fall()
 
     def fall(self):
-        if self.y < (top_left_y + play_height - self.height * self.number):
+        if self.y < (bottom_y[int((self.x-top_left_x)/grid_size)] - self.height * self.number):
             self.y += self.vel_y
 
 class TargetBlock(object):
@@ -54,7 +50,8 @@ class TargetBlock(object):
         self.height = height
         self.number = number
         self.colors = []
-        self.pick_color = True
+
+        self.color_set()
 
     def color_set(self):
         for i in range(self.number):
@@ -64,9 +61,5 @@ class TargetBlock(object):
             self.colors.append(random_color)     
 
     def draw(self, screen):
-        if(self.pick_color):
-            self.color_set()
-            self.pick_color = False
-
         for i in range(self.number):
             pygame.draw.rect(screen, self.colors[i], [self.x, self.y+i*self.height, self.width, self.height])# rect(surface, color, rect, width=0)

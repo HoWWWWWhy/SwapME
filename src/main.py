@@ -9,13 +9,10 @@ pygame.display.set_caption("Swap ME")
 screen = pygame.display.set_mode(screen_size)
 
 clock = pygame.time.Clock()
-FPS = 5
+FPS = 10
 
 def create_grid(locked_positions={}):
-    cols = int(play_width / grid_size)
-    rows = int(play_height / grid_size)
-    
-    grid = [[(128, 128, 128) for x in range(cols)] for x in range(rows)]
+    grid = [[GRAY for x in range(cols)] for x in range(rows)]
  
     for i in range(len(grid)):# rows
         for j in range(len(grid[i])):# cols
@@ -27,9 +24,25 @@ def create_grid(locked_positions={}):
 def draw_grid(screen, grid):
     for i in range(len(grid)):# rows
         for j in range(len(grid[i])):# cols
-            pygame.draw.rect(screen, grid[i][j], (top_left_x + j* grid_size, top_left_y + i * grid_size, grid_size, grid_size), 1)
+            if(grid[i][j] != GRAY):
+                gridLineWidth = 0
+            else:
+                gridLineWidth = grid_line_width
+            pygame.draw.rect(screen, grid[i][j], (top_left_x + j* grid_size, top_left_y + i * grid_size, grid_size, grid_size), gridLineWidth)
             
     pygame.draw.rect(screen, RED, [top_left_x, top_left_y, play_width, play_height], 3)
+
+def get_bottom(grid):
+    bottom_y_rowN = [rows]*cols
+
+    for j in range(cols):
+        for i in range(rows):
+            if(grid[i][j] != GRAY):
+                bottom_y_rowN[j] = i
+                break
+    
+    for i in range(cols):
+        bottom_y[i] = top_left_y + bottom_y_rowN[i]*grid_size
 
 def draw_screen():
     screen.fill(BLACK)
@@ -59,8 +72,11 @@ def valid_move(block):
 
     return [is_valid_left, is_valid_right]
 
+
 # mainloop
 # global grid
+
+clock = pygame.time.Clock()
 
 run = True
 level = 1
@@ -68,7 +84,7 @@ block_counts = level + 2
 
 locked_positions = {}  # (x,y):(255,0,0)
 grid = create_grid(locked_positions)
-currentBlock = MyBlock(top_left_x, top_left_y, block_width, block_height, block_counts)
+currentBlock = MyBlock(top_left_x+(cols//2-1)*grid_size, top_left_y, block_width, block_height, block_counts)
 targetBlock = TargetBlock(width - target_offset_width, 150, block_width, block_height, block_counts)
 newBlock = False
 
@@ -77,8 +93,7 @@ while run:
 
     [LeftMove, RightMove] = valid_move(currentBlock)
     # check if current block is arrived at bottom
-    if currentBlock.y + currentBlock.height*block_counts >= top_left_y+play_height:
-        pygame.time.wait(500)
+    if currentBlock.y + currentBlock.height*block_counts >= bottom_y[int((currentBlock.x-top_left_x)/grid_size)]:
         newBlock = True
     
     for event in pygame.event.get():
@@ -102,10 +117,19 @@ while run:
                 currentBlock.colors[currentBlock.focus_block], currentBlock.colors[currentBlock.focus_block - 1] \
                     = currentBlock.colors[currentBlock.focus_block - 1], currentBlock.colors[currentBlock.focus_block]
             elif event.key == pygame.K_RETURN:# ENTER KEY
-                currentBlock.y = top_left_y + play_height - currentBlock.height * block_counts
+                currentBlock.y = bottom_y[int((currentBlock.x-top_left_x)/grid_size)] - currentBlock.height * block_counts
 
     if newBlock:
-        currentBlock = MyBlock(top_left_x, top_left_y, block_width, block_height, block_counts)
+        for i in range(block_counts):
+            locked_positions[((currentBlock.x-top_left_x)/grid_size, (currentBlock.y+i*block_height-top_left_y)/grid_size)] = currentBlock.colors[i]
+        
+        grid = create_grid(locked_positions)
+        get_bottom(grid)
+        print(bottom_y)
+        #pygame.time.wait(500)
+        currentBlock = MyBlock(top_left_x+(cols//2-1)*grid_size, top_left_y, block_width, block_height, block_counts)
+        targetBlock = TargetBlock(width - target_offset_width, 150, block_width, block_height, block_counts)
+        
         
         newBlock = False
 
